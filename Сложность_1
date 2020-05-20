@@ -231,7 +231,7 @@ struct student* from_beakup(struct student* ptr_struct, int* num)
 	free(file);
 	ptr_struct = input_student(ptr_struct, num, backup);
 	fclose(backup);
-	show(ptr_struct, 0 *num);
+	show(ptr_struct, 0, *num);
 	FILE* csv = fopen("students.csv", "w");
 	if (csv == 0)
 	{
@@ -284,7 +284,6 @@ void find(struct student* ptr_struct, int num)
 	char** name_arr = calloc(num, sizeof(char*));
 	for (int i = 0; i < num; ++i)
 		name_arr[i] = (ptr_struct + i)->familyname;
-	show(ptr_struct, 0, num);
 	char* consol = input_str_consol(NULL);
 	int flag = bin_search(name_arr, consol, num);
 	if (flag == -1)
@@ -293,7 +292,6 @@ void find(struct student* ptr_struct, int num)
 		return;
 	}
 	int left = flag, right = flag;
-	show(ptr_struct, flag, flag + 1);
 	while((ptr_struct + left - 1) > 0 && left != 0)
 	{
 		if (string_cmd((ptr_struct + left - 1)->familyname, consol) != -1)
