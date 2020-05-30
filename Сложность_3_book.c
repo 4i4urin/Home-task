@@ -11,6 +11,7 @@ void find_book(struct book*, int);
 struct book* input_book(struct book*, int*, FILE*);
 struct library* newnode_book(FILE*, char*, int*);
 struct library* add_library_book(struct library*, FILE*, char*, char*, int*, int*);
+void chenge_book(struct book*, int);
 
 
 void book(int level)
@@ -63,9 +64,54 @@ void book(int level)
 				book_menu = menu_book(level);
 				in_log("Success");
 			break;
+			case 6:
+				in_log("Change book's information");
+				shell_sort_struct_book(book, number_book);
+				chenge_book(book, number_book);
+				book_menu = menu_book(level);
+				in_log("Success");
+			break;
 		}
 	}
 	free(book);
+}
+
+void chenge_book(struct book* ptr_struct, int num)
+{
+	printf("Write ISBN of book you would like change\n");
+	char** ISBN_arr = calloc(num, sizeof(char*));
+	for (int i = 0; i < num; ++i)
+		ISBN_arr[i] = (ptr_struct + i)->ISBN;
+	char* consol = input_str_consol(NULL);
+	in_log(consol);
+	int find = bin_search(ISBN_arr, consol, num - 1);
+	free(ISBN_arr);
+	if (find == -1)
+	{
+		printf("No such bookt\n");
+		in_log("No such book");
+		free(consol);
+		return;
+	}
+	free(consol);
+	puts("Write number of column you would like to chenge");
+	puts("1 - author");
+	puts("2 - title");
+	puts("3 - all");
+	char c1 = getchar();
+	char c2;
+	while((c2 = getchar()) != '\n') c2 = getchar();
+	switch(c1)
+	{
+		case '1': (ptr_struct + find)->author = input_str_consol(NULL); break;
+		case '2': (ptr_struct + find)->title = input_str_consol(NULL); break;
+		case '3': (ptr_struct + find)->all = int_from_str(input_str_consol(NULL)); break;
+		default: puts("Don't know such point"); in_log("Don't know such point"); break;
+	}
+	FILE* csv = fopen("book.csv", "w");
+	for (int i = 0; i < num; ++i)
+		fprintf(csv, "%s;%s;%s;%d;%d\n", (ptr_struct + i)->ISBN, (ptr_struct + i)->author, (ptr_struct + i)->title, (ptr_struct + i)->all, (ptr_struct + i)->out);
+	fclose(csv);
 }
 
 void show_inf_book(struct book* ptr_struct, int num)
@@ -314,7 +360,7 @@ void shell_sort_struct_author(struct book* ptr_struct, int n)
 	{
 		for (i = gap; i < n; ++i)
 		{
-			for (j = i - gap; j >= 0 && string_cmd(ptr_struct[j].title, ptr_struct[j + gap].title) == 1; j -= gap)
+			for (j = i - gap; j >= 0 && string_cmd(ptr_struct[j].author, ptr_struct[j + gap].author) == 1; j -= gap)
 			{
 				struct book temp = ptr_struct[j];
 				ptr_struct[j] = ptr_struct[j + gap];
@@ -335,6 +381,7 @@ int menu_book(int level)
 		{
 			puts("-a to add new book");
 			puts("-d to delite book");
+			puts("-c to change book information");
 		}
 		puts("-f to find book for auth");
 		puts("-s to show all books");
@@ -366,6 +413,7 @@ int menu_book(int level)
 				case 'f': menu = 3; break;
 				case 's': menu = 4; break;
 				case 'i': menu = 5; break;
+				case 'c': menu = 6; break;
 				case '0': menu = 0; break;
 				default: puts("\nI don't know such point\n"); in_log("Unknown point"); continue;
 			}
