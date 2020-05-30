@@ -19,6 +19,7 @@ void find_student(struct student*, int);// ищет и выводит студе
 struct library* newnode_student(FILE*, char*, char*, int*);
 struct library* add_library_student(struct library*, FILE*, char*, char*, char*, int*, int*);
 void show_inf_students(struct student*, int);
+void chenge_student(struct student*, int);
 
 
 void students(int level)
@@ -83,9 +84,58 @@ void students(int level)
 				from_menu = menu_student(level);
 				in_log("Success");
 			break;
+			case 8:
+				in_log("chenge student's information");
+				shell_sort_struct_students(stud, number_students);
+				chenge_student(stud, number_students);
+				from_menu = menu_student(level);
+				in_log("Success");
+				break;
 		}
 	}
 	free(stud);
+}
+
+void chenge_student(struct student* ptr_struct, int num)
+{
+	printf("Write id of student\n");
+	char** id_arr = calloc(num, sizeof(char*));
+	for (int i = 0; i < num; ++i)
+		id_arr[i] = (ptr_struct + i)->id;
+	char* consol = input_str_consol(NULL);
+	in_log(consol);
+	int find = bin_search(id_arr, consol, num - 1);
+	free(id_arr);
+	if (find == -1)
+	{
+		printf("No such student\n");
+		in_log("No such student");
+		free(consol);
+		return;
+	}
+	free(consol);
+	puts("Write number of column you would like to chenge");
+	puts("1 - familyname");
+	puts("2 - name");
+	puts("3 - fathername");
+	puts("4 - index");
+	puts("5 - spesiality");
+	char c1 = getchar();
+	char c2;
+	while((c2 = getchar()) != '\n') c2 = getchar();
+	switch(c1)
+	{
+		case '1': (ptr_struct + find)->familyname = input_str_consol(NULL); break;
+		case '2': (ptr_struct + find)->name = input_str_consol(NULL); break;
+		case '3': (ptr_struct + find)->fathername = input_str_consol(NULL); break;
+		case '4': (ptr_struct + find)->index = input_str_consol(NULL); break;
+		case '5': (ptr_struct + find)->specialist = input_str_consol(NULL); break;
+		default: puts("Don't know such point"); in_log("Don't know such point"); break;
+	}
+	FILE* csv = fopen("students.csv", "w");
+	for (int i = 0; i < num; ++i)
+		fprintf(csv, "%s;%s;%s;%s;%s;%s\n", (ptr_struct + i)->id, (ptr_struct + i)->familyname, (ptr_struct + i)->name, (ptr_struct + i)->fathername, (ptr_struct + i)->index, (ptr_struct + i)->specialist);
+	fclose(csv);
 }
 
 void show_inf_students(struct student* ptr_struct, int num)
@@ -144,6 +194,7 @@ void find_student(struct student* ptr_struct, int num)
 	char** name_arr = calloc(num, sizeof(char*));
 	for (int i = 0; i < num; ++i)
 		name_arr[i] = (ptr_struct + i)->familyname;
+	printf("Write familyname of student\n");
 	char* consol = input_str_consol(NULL);
 	in_log(consol);
 	int flag = bin_search(name_arr, consol, num - 1);
@@ -445,6 +496,7 @@ int menu_student(int level)
 			puts("-d to delite student"); // menu_student = 3
 			puts("-r to restabilish students from beakup"); // menu_student = 4
 			puts("-b to create beckup file"); // menu_student = 5
+			puts("-c to chenge students's information");
 		}
 		puts("-f to find students for familyname"); // menu_student = 6
 		puts("-0 to go to main menu"); // menu_student = 0
@@ -476,6 +528,7 @@ int menu_student(int level)
 				case 'b': menu_student = 5; break;
 				case 'f': menu_student = 6; break;
 				case 'i': menu_student = 7; break;
+				case 'c': menu_student = 8; break;
 				case '0': menu_student = 0; break;
 				default: puts("\nI don't know such point\n"); in_log("Unknown point"); continue;
 			}
