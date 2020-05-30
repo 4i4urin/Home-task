@@ -5,6 +5,7 @@ void book(int);
 int main_menu();
 void login(int*, int*);
 
+
 int main(int argc, char const *argv[])
 {
 	
@@ -204,7 +205,7 @@ int bin_search(char** mas_str, char* x, int high)
 	int low = 0;
 	while (low <= high)
 	{
-		int mid = low + (high - low) / 2;
+		int mid = (high + low) / 2;
 		if (string_cmd(mas_str[mid], x) == 1) //mas_str[mid] > x
 			high = mid - 1;
 		else if (string_cmd(x, mas_str[mid]) == 1)// x > mas_str[mid]
@@ -264,7 +265,7 @@ void print_student(char* id)
 void print_book(char* ISBN)
 {
 	int number_book = 0;
-	FILE* book_f = fopen("students.csv", "r");
+	FILE* book_f = fopen("book.csv", "r");
 	if (book_f == 0)
 	{
 		printf("Problem with students.csv\n");
